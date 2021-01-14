@@ -22,13 +22,13 @@ namespace APICatalog_NetCore.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
-            return _context.Produtos.AsNoTracking().ToList();
+            return _context.produtos.AsNoTracking().ToList();
         }
 
         [HttpGet("{id}", Name = "ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
-            var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.CategoriaId == id);
+            var produto = _context.produtos.AsNoTracking().FirstOrDefault(p => p.ProdutId == id);
 
             if (produto == null)
                 return NotFound();
@@ -44,14 +44,14 @@ namespace APICatalog_NetCore.Controllers
             //    return BadRequest(ModelState);
             //}
 
-            _context.Produtos.Add(produto);
+            _context.produtos.Add(produto);
             _context.SaveChanges();
 
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutId }, produto);
         }
 
 
-        [HttpGet("{id}")]
+        [HttpPut("{id}")]
         public ActionResult Put(int id, [FromBody] Produto produto)
         {
             if (id != produto.ProdutId)
@@ -65,7 +65,7 @@ namespace APICatalog_NetCore.Controllers
         [HttpDelete("{id}")]
         public ActionResult<Produto> Delete(int id)
         {
-            var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.CategoriaId == id);
+            var produto = _context.produtos.AsNoTracking().FirstOrDefault(p => p.ProdutId == id);
 
             //var produto = _context.Produtos.Find(id); /*A vantagem do find é que vai procurar primeiro na memória, se achar não vai procurar no banco, porém 
                                                         /* o find só posso utilizar se o id for a chave primária da tabela*/
@@ -73,7 +73,7 @@ namespace APICatalog_NetCore.Controllers
             if (id != produto.ProdutId)
                 return BadRequest();
 
-            _context.Produtos.Remove(produto);
+            _context.produtos.Remove(produto);
             _context.SaveChanges();
             return Ok();
         }

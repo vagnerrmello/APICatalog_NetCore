@@ -6,11 +6,11 @@ namespace APICatalog_NetCore.Migrations
     {
         protected override void Up(MigrationBuilder mb)
         {
-            mb.Sql("Insert Into Categorias(Nome, ImagemUrl) Values('Programação', 'https://raw.githubusercontent.com/json-api-dotnet/JsonApiDotnetCore/master/logo.png')");
+            mb.Sql("Insert Into catalogodb.categorias(Nome, ImagemUrl) Values('Programação', 'http://www.macoratti.net/Imagens/1.jpg')");
 
-            mb.Sql("Insert Into Produtos(Nome, Descricao, Preco, ImagemUrl, Estoque, DataCadastro, Categoria) " +
-                "Values('CSharo', 'Linguagem de programação', 299.99, 'https://raw.githubusercontent.com/json-api-dotnet/JsonApiDotnetCore/master/logo.png', 10, now(), " +
-                "(Select CategoriaId From Categorias Where Nome = 'Programação')");
+            mb.Sql("Insert Into catalogodb.produtos(Nome, Descricao, Preco, ImagemUrl, Estoque, DataCadastro, CategoriaId) " +
+                "Values('CSharp', 'Linguagem de programação', 299.99, 'https://raw.githubusercontent.com/json-api-dotnet/JsonApiDotnetCore/master/logo.png', 10, now(), " +
+                "(Select CategoriaId From Categorias Where Nome = 'Programação'))");
         }
 
         protected override void Down(MigrationBuilder mb)

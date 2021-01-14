@@ -14,6 +14,6 @@ namespace APICatalog_NetCore.Context
         { }
         public DbSet<Categoria> Categorias { get; set; }
 
-        public DbSet<Produto> Produtos { get; set; }
+        public DbSet<Produto> produtos { get; set; }
     }
 }
