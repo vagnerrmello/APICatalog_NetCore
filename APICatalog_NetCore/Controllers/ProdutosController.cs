@@ -1,6 +1,7 @@
 ﻿using APICatalog_NetCore.Context;
 using APICatalog_NetCore.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,15 +21,35 @@ namespace APICatalog_NetCore.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public  ActionResult<IEnumerable<Produto>> GetTodos()
         {
-            return _context.produtos.AsNoTracking().ToList();
+            return  _context.produtos.AsNoTracking().ToList();
         }
 
-        [HttpGet("{id}", Name = "ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<Produto>>> Get(int id, [BindRequired] string nome)
         {
-            var produto = _context.produtos.AsNoTracking().FirstOrDefault(p => p.ProdutId == id);
+            return await _context.produtos.AsNoTracking().ToListAsync();
+        }
+
+        //Pode conter diversas rotas
+        [HttpGet("primeiro")]
+        //[HttpGet("/primeiro")]
+        //[HttpGet("{valor:alpha:length(5)}")] //Restrição: Apenas alfanúmerico e com tamanho de 5
+        public ActionResult<Produto> GetPrimeiro()
+        {
+            return _context.produtos.FirstOrDefault();
+        }
+
+        //No segundo parâmetro para ser obrigatório basta retirar o símbolo de interrogação, neste caso com o interrogação é opcional
+        //[HttpGet("{id}/{param2?}", Name = "ObterProduto")]
+        //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]//Restrição de rota, o id não poser menor que 1
+        [HttpGet("{id}", Name = "ObterProduto")]
+        public async Task<ActionResult<Produto>> Get([FromQuery]int id)
+        {
+            //var meuParamentro = param2;
+
+            var produto = await _context.produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutId == id);
 
             if (produto == null)
                 return NotFound();
