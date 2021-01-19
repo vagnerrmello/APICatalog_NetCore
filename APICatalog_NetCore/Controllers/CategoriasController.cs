@@ -1,5 +1,6 @@
 ﻿using APICatalog_NetCore.Context;
 using APICatalog_NetCore.Models;
+using APICatalog_NetCore.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -21,6 +22,12 @@ namespace APICatalog_NetCore.Controllers
             _context = contexto;
         }
 
+        [HttpGet("saudacao/{nome}")]
+        public ActionResult<string> GetSaudacao([FromServices] IMeuServico meuServico,
+            string nome)
+        {
+            return meuServico.Saudacao(nome);
+        }
 
         [HttpGet]
         public ActionResult<IEnumerable<Categoria>> Get()

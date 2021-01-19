@@ -1,4 +1,5 @@
 using APICatalog_NetCore.Context;
+using APICatalog_NetCore.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,6 +30,8 @@ namespace APICatalog_NetCore
         {
             services.AddDbContext<AppDbContext>(options => 
             options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddTransient<IMeuServico, MeuServico>();
 
             services.AddControllers()
                 .AddNewtonsoftJson(options =>
