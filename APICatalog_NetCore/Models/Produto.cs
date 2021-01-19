@@ -13,8 +13,9 @@ namespace APICatalog_NetCore.Models
         [Key]
         public int ProdutId { get; set; }
 
-        [Required]
-        [MaxLength(80)]
+        [Required(ErrorMessage ="O nome é obrigatório!")]
+        [MaxLength(80,ErrorMessage ="Máximo de 80 caractere")]
+        [MinLength(5, ErrorMessage ="Deve ter o mínimo de 5 Caractere")]
         public string Nome { get; set; }
 
         [Required]
