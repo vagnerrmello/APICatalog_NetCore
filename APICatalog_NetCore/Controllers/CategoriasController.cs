@@ -1,10 +1,13 @@
 ﻿using APICatalog_NetCore.Context;
 using APICatalog_NetCore.Models;
+using APICatalog_NetCore.Repository;
 using APICatalog_NetCore.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +19,23 @@ namespace APICatalog_NetCore.Controllers
     [ApiController]
     public class CategoriasController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        public CategoriasController(AppDbContext contexto)
+        private readonly IUnitOfWork _uof;
+        //private readonly AppDbContext _context;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
+        public CategoriasController(IUnitOfWork uof, IConfiguration config, 
+            ILogger<CategoriasController> logger)
         {
-            _context = contexto;
+            _uof = uof;
+            _configuration = config;
+            _logger = logger;
+        }
+
+        [HttpGet("autor")]
+        public string GetAutor()
+        {
+            var autor = _configuration["autor"];
+            return $"Autor: {autor}";
         }
 
         [HttpGet("saudacao/{nome}")]
@@ -34,7 +50,7 @@ namespace APICatalog_NetCore.Controllers
         {
             try
             {
-                return _context.Categorias.AsNoTracking().ToList();
+                return _uof.CategoriaRepository.Get().ToList();
             }
             catch (Exception)
             {
@@ -46,15 +62,16 @@ namespace APICatalog_NetCore.Controllers
         [HttpGet("produtos")]
         public ActionResult<IEnumerable<Categoria>> GetCategoriaProdutos()
         {
-            return _context.Categorias.Include(p=> p.Produtos).ToList();
+            _logger.LogInformation("====== Você está acessando Categorias/Produtos ======");
+            return _uof.CategoriaRepository.Get().Include(p=> p.Produtos).ToList();
         }
 
         [HttpGet("{id}", Name = "ObterCategoria")]
-        public async Task<ActionResult<Categoria>> Get([FromQuery]int id)
+        public ActionResult<Categoria> Get(int id)
         {
             try
             {
-                var categoria = await _context.Categorias.AsNoTracking().FirstOrDefaultAsync(c => c.CategoriaId == id);
+                var categoria = _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
                 //var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
 
                 if (categoria == null)
@@ -71,7 +88,6 @@ namespace APICatalog_NetCore.Controllers
         [HttpPost]
         public ActionResult Post([FromBody] Categoria categoria)
         {
-
             try
             {
                 //if (!ModelState.IsValid)
@@ -79,8 +95,8 @@ namespace APICatalog_NetCore.Controllers
                 //    return BadRequest(ModelState);
                 //}
 
-                _context.Categorias.Add(categoria);
-                _context.SaveChanges();
+                _uof.CategoriaRepository.Add(categoria);
+                _uof.Commit();
 
                 return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
             }
@@ -100,8 +116,8 @@ namespace APICatalog_NetCore.Controllers
                 if (id != categoria.CategoriaId)
                     return BadRequest($"Não foi possível encontrar o registro com o id = {id}");
 
-                _context.Entry(categoria).State = EntityState.Modified;
-                _context.SaveChanges();
+                _uof.CategoriaRepository.Update(categoria);
+                _uof.Commit();
                 return Ok();
             }
             catch (Exception)
@@ -115,7 +131,7 @@ namespace APICatalog_NetCore.Controllers
         {
             try
             {
-                var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
+                var categoria = _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
 
                 //var produto = _context.Produtos.Find(id); /*A vantagem do find é que vai procurar primeiro na memória, se achar não vai procurar no banco, porém 
                 /* o find só posso utilizar se o id for a chave primária da tabela*/
@@ -123,8 +139,8 @@ namespace APICatalog_NetCore.Controllers
                 if (id != categoria.CategoriaId)
                     return BadRequest($"Não foi possível encontrar o registro com o id = {id}");
 
-                _context.Categorias.Remove(categoria);
-                _context.SaveChanges();
+                _uof.CategoriaRepository.Delete(categoria);
+                _uof.Commit();
                 return Ok();
             }
             catch (Exception)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using APICatalog_NetCore.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,6 +17,7 @@ namespace APICatalog_NetCore.Models
         [Required(ErrorMessage ="O nome é obrigatório!")]
         [MaxLength(80,ErrorMessage ="Máximo de 80 caractere")]
         [MinLength(5, ErrorMessage ="Deve ter o mínimo de 5 Caractere")]
+        [PrimeiraLetraMaiuscula]
         public string Nome { get; set; }
 
         [Required]

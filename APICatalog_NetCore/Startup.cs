@@ -1,4 +1,8 @@
 using APICatalog_NetCore.Context;
+using APICatalog_NetCore.Extensions;
+using APICatalog_NetCore.Filters;
+using APICatalog_NetCore.Logging;
+using APICatalog_NetCore.Repository;
 using APICatalog_NetCore.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +32,9 @@ namespace APICatalog_NetCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddScoped<ApiLoggingFilter>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ApiLoggingFilter>();
             services.AddDbContext<AppDbContext>(options => 
             options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -42,12 +49,20 @@ namespace APICatalog_NetCore
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            loggerFactory.AddProvider(new CustomLoggerProvider(new CustomLoggerProviderConfiguration
+            {
+                LogLevel = LogLevel.Information
+            }));
+
+            //adiciona o middleware de tratamento de erros
+            app.ConfigureExceptionHandler();
 
             app.UseHttpsRedirection();
 
