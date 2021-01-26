@@ -2,11 +2,13 @@
 using APICatalog_NetCore.DTOs;
 using APICatalog_NetCore.Filters;
 using APICatalog_NetCore.Models;
+using APICatalog_NetCore.Pagination;
 using APICatalog_NetCore.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,9 +45,21 @@ namespace APICatalog_NetCore.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
-        public  ActionResult<IEnumerable<ProdutoDTO>> GetTodos()
+        public  ActionResult<IEnumerable<ProdutoDTO>> GetTodos([FromQuery] ProdutosParameters produtosParameters)
         {
-            var produtos = _uof.ProdutoRepository.Get().ToList();
+            var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+
+            var metadata = new
+            {
+                produtos.TotalCount,
+                produtos.PageSize,
+                produtos.CurrentPage,
+                produtos.TotalPages,
+                produtos.HasNext,
+                produtos.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
 
