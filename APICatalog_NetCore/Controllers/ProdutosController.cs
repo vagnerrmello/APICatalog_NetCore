@@ -35,9 +35,9 @@ namespace APICatalog_NetCore.Controllers
         }
 
         [HttpGet("menorpreco")]
-        public ActionResult<IEnumerable<ProdutoDTO>> GetProdutosPrecos()
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetProdutosPrecos()
         {
-            var produtos = _uof.ProdutoRepository.GetProdutosPorPreco().ToList();
+            var produtos = await _uof.ProdutoRepository.GetProdutosPorPreco();
             var produtosDTO = _mapper.Map<List<ProdutoDTO>>(produtos);
 
             return produtosDTO;
@@ -76,9 +76,9 @@ namespace APICatalog_NetCore.Controllers
         [HttpGet("primeiro")]
         //[HttpGet("/primeiro")]
         //[HttpGet("{valor:alpha:length(5)}")] //Restrição: Apenas alfanúmerico e com tamanho de 5
-        public ActionResult<ProdutoDTO> GetPrimeiro()
+        public async Task<ActionResult<ProdutoDTO>> GetPrimeiro()
         {
-            var produto = _uof.ProdutoRepository.Get().FirstOrDefault();
+            var produto = await _uof.ProdutoRepository.Get().FirstOrDefaultAsync();
 
             var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
 
@@ -89,9 +89,9 @@ namespace APICatalog_NetCore.Controllers
         //[HttpGet("{id}/{param2?}", Name = "ObterProduto")]
         //[HttpGet("{id:int:min(1)}", Name = "ObterProduto")]//Restrição de rota, o id não poser menor que 1
         [HttpGet("{id}", Name = "ObterProduto")]
-        public ActionResult<ProdutoDTO> Get(int id)
+        public async Task<ActionResult<ProdutoDTO>> Get(int id)
         {
-            var produto = _uof.ProdutoRepository.GetById(p => p.ProdutId == id);
+            var produto = await _uof.ProdutoRepository.GetById(p => p.ProdutId == id);
 
             if (produto == null)
                 return NotFound();
@@ -102,12 +102,12 @@ namespace APICatalog_NetCore.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] ProdutoDTO produtoDTO)
+        public async Task<ActionResult> Post([FromBody] ProdutoDTO produtoDTO)
         {
             var produto = _mapper.Map<Produto>(produtoDTO);
 
             _uof.ProdutoRepository.Add(produto);
-            _uof.Commit();
+            await _uof.Commit();
 
             var _produtoDTO = _mapper.Map<ProdutoDTO>(produto);
 
@@ -116,7 +116,7 @@ namespace APICatalog_NetCore.Controllers
 
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] ProdutoDTO produtoDTO)
+        public async Task<ActionResult> Put(int id, [FromBody] ProdutoDTO produtoDTO)
         {
             
 
@@ -126,14 +126,14 @@ namespace APICatalog_NetCore.Controllers
             var produto = _mapper.Map<Produto>(produtoDTO);
 
             _uof.ProdutoRepository.Update(produto);
-            _uof.Commit();
+            await _uof.Commit();
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<ProdutoDTO> Delete(int id)
+        public async Task<ActionResult<ProdutoDTO>> Delete(int id)
         {
-            var produto = _uof.ProdutoRepository.GetById(p => p.ProdutId == id);
+            var produto = await _uof.ProdutoRepository.GetById(p => p.ProdutId == id);
 
             //var produto = _context.Produtos.Find(id); /*A vantagem do find é que vai procurar primeiro na memória, se achar não vai procurar no banco, porém 
                                                         /* o find só posso utilizar se o id for a chave primária da tabela*/
@@ -142,7 +142,7 @@ namespace APICatalog_NetCore.Controllers
                 return BadRequest();
 
             _uof.ProdutoRepository.Delete(produto);
-            _uof.Commit();
+            await _uof.Commit();
 
             var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
 

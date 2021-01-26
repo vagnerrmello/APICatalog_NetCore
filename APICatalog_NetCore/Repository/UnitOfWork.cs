@@ -1,4 +1,5 @@
 ﻿using APICatalog_NetCore.Context;
+using System.Threading.Tasks;
 
 namespace APICatalog_NetCore.Repository
 {
@@ -28,9 +29,9 @@ namespace APICatalog_NetCore.Repository
             }
         }
 
-        public void Commit()
+        public async Task Commit()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public void Dispose()

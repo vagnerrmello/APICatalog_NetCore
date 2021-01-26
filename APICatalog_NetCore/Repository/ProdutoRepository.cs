@@ -1,8 +1,10 @@
 ﻿using APICatalog_NetCore.Context;
 using APICatalog_NetCore.Models;
 using APICatalog_NetCore.Pagination;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace APICatalog_NetCore.Repository
 {
@@ -23,9 +25,9 @@ namespace APICatalog_NetCore.Repository
                 produtosParameters.PageNumber, produtosParameters.PageSize);
         }
 
-        public IEnumerable<Produto> GetProdutosPorPreco()
+        public async Task<IEnumerable<Produto>> GetProdutosPorPreco()
         {
-            return Get().OrderBy(c => c.Preco).ToList();
+            return await Get().OrderBy(c => c.Preco).ToListAsync();
         }
 
     }

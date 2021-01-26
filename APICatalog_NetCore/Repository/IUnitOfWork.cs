@@ -1,9 +1,11 @@
-﻿namespace APICatalog_NetCore.Repository
+﻿using System.Threading.Tasks;
+
+namespace APICatalog_NetCore.Repository
 {
     public interface IUnitOfWork
     {
         IProdutoRepository ProdutoRepository { get; }
         ICategoriaRepository CategoriaRepository { get; }
-        void Commit();
+        Task Commit();
     }
 }

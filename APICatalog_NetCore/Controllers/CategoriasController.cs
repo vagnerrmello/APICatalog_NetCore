@@ -78,25 +78,25 @@ namespace APICatalog_NetCore.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro interno ao tentar obter categorias.");
             }
-
         }
 
         [HttpGet("produtos")]
-        public ActionResult<IEnumerable<CategoriaDTO>> GetCategoriaProdutos()
+        public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetCategoriaProdutos()
         {
             _logger.LogInformation("====== Você está acessando Categorias/Produtos ======");
-            var categorias = _uof.CategoriaRepository.Get().Include(p=> p.Produtos).ToList();
+            var categorias = await _uof.CategoriaRepository.GetCategoriasProdutos();
             var categoriasDTO = _mapper.Map<List<CategoriaDTO>>(categorias);
 
             return categoriasDTO;
         }
 
         [HttpGet("{id}", Name = "ObterCategoria")]
-        public ActionResult<CategoriaDTO> Get(int id)
+        public async Task<ActionResult<CategoriaDTO>> Get(int id)
         {
             try
             {
-                var categoria = _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
+                var categoria = await _uof.CategoriaRepository
+                    .GetById(c => c.CategoriaId == id);
                 //var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
 
                 if (categoria == null)
@@ -113,13 +113,13 @@ namespace APICatalog_NetCore.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] CategoriaDTO categoriaDTO)
+        public async Task<ActionResult> Post([FromBody] CategoriaDTO categoriaDTO)
         {
             try
             {
                 var categoria = _mapper.Map<Categoria>(categoriaDTO);
                 _uof.CategoriaRepository.Add(categoria);
-                _uof.Commit();
+                await _uof.Commit();
 
                 return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoriaDTO);
             }
@@ -131,7 +131,7 @@ namespace APICatalog_NetCore.Controllers
 
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, [FromBody] CategoriaDTO categoriaDTO)
+        public async Task<ActionResult> Put(int id, [FromBody] CategoriaDTO categoriaDTO)
         {
             try
             {
@@ -140,7 +140,7 @@ namespace APICatalog_NetCore.Controllers
 
                 var categoria = _mapper.Map<Categoria>(categoriaDTO);
                 _uof.CategoriaRepository.Update(categoria);
-                _uof.Commit();
+                await _uof.Commit();
 
                 return Ok();
             }
@@ -151,11 +151,11 @@ namespace APICatalog_NetCore.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<CategoriaDTO> Delete(int id)
+        public async Task<ActionResult<CategoriaDTO>> Delete(int id)
         {
             try
             {
-                var categoria = _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
+                var categoria = await _uof.CategoriaRepository.GetById(c => c.CategoriaId == id);
 
                 //var produto = _context.Produtos.Find(id); /*A vantagem do find é que vai procurar primeiro na memória, se achar não vai procurar no banco, porém 
                 /* o find só posso utilizar se o id for a chave primária da tabela*/
@@ -164,7 +164,7 @@ namespace APICatalog_NetCore.Controllers
                     return BadRequest($"Não foi possível encontrar o registro com o id = {id}");
 
                 _uof.CategoriaRepository.Delete(categoria);
-                _uof.Commit();
+                await _uof.Commit();
 
                 var produtoDTO = _mapper.Map<CategoriaDTO>(categoria);
 
