@@ -8,6 +8,7 @@ using APICatalog_NetCore.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +43,10 @@ namespace APICatalog_NetCore
             services.AddDbContext<AppDbContext>(options => 
             options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddTransient<IMeuServico, MeuServico>();
 
             services.AddControllers()
@@ -73,7 +78,11 @@ namespace APICatalog_NetCore
             //adiciona o middleware de roteamento
             app.UseRouting();
 
+            //adiciona o middleware de autorização
             app.UseAuthorization();
+
+            //adiciona o middleware que habilita a autenticação
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
