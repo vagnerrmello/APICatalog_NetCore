@@ -45,9 +45,9 @@ namespace APICatalog_NetCore.Controllers
 
         [HttpGet]
         [ServiceFilter(typeof(ApiLoggingFilter))]
-        public  ActionResult<IEnumerable<ProdutoDTO>> GetTodos([FromQuery] ProdutosParameters produtosParameters)
+        public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetTodos([FromQuery] ProdutosParameters produtosParameters)
         {
-            var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+            var produtos = await _uof.ProdutoRepository.GetProdutos(produtosParameters);
 
             var metadata = new
             {

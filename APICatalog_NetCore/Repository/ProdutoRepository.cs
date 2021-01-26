@@ -13,7 +13,7 @@ namespace APICatalog_NetCore.Repository
         public ProdutoRepository(AppDbContext contexto) : base(contexto)
         {
         }
-        public PagedList<Produto> GetProdutos(ProdutosParameters produtosParameters)
+        public async Task<PagedList<Produto>> GetProdutos(ProdutosParameters produtosParameters)
         {
             //return Get()
             //    .OrderBy(on => on.Nome)
@@ -21,7 +21,7 @@ namespace APICatalog_NetCore.Repository
             //    .Take(produtosParameters.PageSize)
             //    .ToList();
 
-            return PagedList<Produto>.ToPagedList(Get().OrderBy(on => on.ProdutId), 
+            return await PagedList<Produto>.ToPagedList(Get().OrderBy(on => on.ProdutId), 
                 produtosParameters.PageNumber, produtosParameters.PageSize);
         }
 

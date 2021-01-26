@@ -7,7 +7,7 @@ namespace APICatalog_NetCore.Repository
 {
     public interface ICategoriaRepository : IRepository<Categoria>
     {
-        PagedList<Categoria> GetCategorias(CategoriasParameters categoriasParameters);
+        Task<PagedList<Categoria>> GetCategorias(CategoriasParameters categoriasParameters);
         Task<IEnumerable<Categoria>> GetCategoriasProdutos();
     }
 }
