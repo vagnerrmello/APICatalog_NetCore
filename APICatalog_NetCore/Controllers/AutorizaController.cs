@@ -94,7 +94,7 @@ namespace APICatalog_NetCore.Controllers
             var claims = new[]
             {
                  new Claim(JwtRegisteredClaimNames.UniqueName, userInfo.Email),
-                 new Claim("meuPet", "pipoca"),
+                 new Claim("meuPet", "florzinha"),
                  new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
              };
 

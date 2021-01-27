@@ -1,24 +1,22 @@
-﻿using APICatalog_NetCore.Context;
-using APICatalog_NetCore.DTOs;
+﻿using APICatalog_NetCore.DTOs;
 using APICatalog_NetCore.Models;
 using APICatalog_NetCore.Pagination;
 using APICatalog_NetCore.Repository;
 using APICatalog_NetCore.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace APICatalog_NetCore.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[Controller]")]
     [ApiController]
     public class CategoriasController : ControllerBase
